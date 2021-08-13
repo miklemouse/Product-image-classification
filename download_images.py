@@ -11,7 +11,7 @@ images.
 In order to specify certain parameters, please refer to global
 variables in this script:
 
-The amount of images and categories           
+The amount of images and categories
 you need to download                          imgs_in_cat, cat_amount
 
 The CSV file with object info                 input_file_name
@@ -29,19 +29,17 @@ from shutil import copyfile
 from tqdm import tqdm
 
 
-
 input_file_name = 'dump_with_category.csv'
 
 img_folder = '1000x100/'
 backup_folder = 'images/'
 
-csv_col = {'cat' : 1, 'img_urls' : 2, 'main_img_url' : 3}
+csv_col = {'cat': 1, 'img_urls': 2, 'main_img_url': 3}
 
 imgs_in_cat = 100
 cat_amount = 1000
 
 backup_filename = 'categories_to_download.csv'
-
 
 
 def csv_str_to_list(csv_string):
@@ -91,8 +89,7 @@ def download_img(img_url, img_name, img_folder, backup_folder=''):
                     'backup_folder/'
     """
     if os.path.exists(img_folder + img_name):
-       return
-
+        return
 
     if backup_folder and os.path.exists(backup_folder + img_name):
         copyfile(backup_folder + img_name,
@@ -107,12 +104,12 @@ def categories_to_download(imgs_in_cat, cat_amount,
                            input_file_name, backup_filename=''):
     """
     Return list of categories needed to be downloaded.
-    
+
             Parameters:
                     imgs_in_cat (int): How many images are needed to
                     be downloaded in each category.
 
-                    cat_amount (int): How many categories are needed 
+                    cat_amount (int): How many categories are needed
                     to be downloaded.
 
                     input_file_name (str): CSV file name with urls
@@ -137,14 +134,14 @@ def categories_to_download(imgs_in_cat, cat_amount,
 
         return cats_to_download
 
-    ### count total amount of images in each category ###
+    # count total amount of images in each category
     num_of_imgs = dict()
     cats_ordered = []
 
     with open(input_path, 'r') as input_file:
         reader = csv.reader(input_file, quotechar='"',
                             quoting=csv.QUOTE_ALL,
-                            skipinitialspace = True)
+                            skipinitialspace=True)
 
         line_number = -1
         for row in tqdm(reader):
@@ -154,16 +151,15 @@ def categories_to_download(imgs_in_cat, cat_amount,
                row[csv_col['main_img_url']] == '':
                 continue
 
-
             cat = row[csv_col['cat']]
-            if not cat in num_of_imgs:
+            if cat not in num_of_imgs:
                 num_of_imgs[cat] = 0
                 cats_ordered.append(cat)
 
             imgs_amount = len(csv_str_to_list(row[csv_col['img_urls']])) + 1
             num_of_imgs[cat] += imgs_amount
 
-    ### determine which categories to download ###
+    # determine which categories to download
     cats_to_download = []
     for cat in cats_ordered:
         if num_of_imgs[cat] >= imgs_in_cat:
@@ -172,14 +168,13 @@ def categories_to_download(imgs_in_cat, cat_amount,
             break
 
     if len(cats_to_download) < cat_amount:
-        raise RuntimeError("Not sufficient amount of images for"+\
-                            "the parameters you've chosen.")
- 
+        raise RuntimeError("Not sufficient amount of images for" +
+                           "the parameters you've chosen.")
+
     with open(backup_filename, 'w') as csvfile:
         writer = csv.writer(csvfile)
         for cat in cats_to_download:
             writer.writerow([cat])
-
 
     return cats_to_download
 
@@ -219,7 +214,7 @@ def download(cats_to_download, input_file_name, csv_col,
     with open(input_file_name, 'r') as input_file:
         reader = csv.reader(input_file, quotechar='"',
                             quoting=csv.QUOTE_ALL,
-                            skipinitialspace = True)
+                            skipinitialspace=True)
 
         line_number = -1
         for row in tqdm(reader):
@@ -227,7 +222,7 @@ def download(cats_to_download, input_file_name, csv_col,
 
             cat = row[csv_col['cat']]
 
-            if not cat in cats_to_download or\
+            if cat not in cats_to_download or\
                imgs_downloaded[cat] >= imgs_in_cat:
                 continue
 
@@ -235,7 +230,7 @@ def download(cats_to_download, input_file_name, csv_col,
             m_img_url = row[csv_col['main_img_url']]
 
             img_urls = csv_str_to_list(row[csv_col['img_urls']])
-            img_names = [str(line_number) + '-' + str(i+1) + '.jpg'\
+            img_names = [str(line_number) + '-' + str(i+1) + '.jpg'
                          for i in range(len(img_urls))]
 
             try:
@@ -250,7 +245,7 @@ def download(cats_to_download, input_file_name, csv_col,
                                  img_folder, backup_folder)
                     imgs_downloaded[cat] += 1
 
-            except (HTTPError, URLError, ValueError)  as err:
+            except (HTTPError, URLError, ValueError) as err:
 
                 exceptions += 1
                 print("Exceptions", exceptions)
@@ -275,8 +270,6 @@ if __name__ == '__main__':
                             input_file_name,
                             backup_filename
                        )
-
-
 
     print("### downloading")
     download(cats_to_download, input_file_name, csv_col,

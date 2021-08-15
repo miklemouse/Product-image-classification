@@ -7,18 +7,6 @@ CSV file format: each row (except the first one) contains information
 about an object. It must include the number of its category and the
 URL of the main image. It may also include URLs of the additional
 images.
-
-In order to specify certain parameters, please refer to global
-variables in this script:
-
-The amount of images and categories
-you need to download                          imgs_in_cat, cat_amount
-
-The CSV file with object info                 input_file_name
-The CSV file columns                          csv_col
-
-The folder to download images to              img_folder
-Folder with already downloaded images         backup_folder
 """
 
 import csv
@@ -27,19 +15,9 @@ import urllib.request
 from urllib.error import HTTPError, URLError
 from shutil import copyfile
 from tqdm import tqdm
-
-
-input_file_name = 'dump_with_category.csv'
-
-img_folder = '1000x100/'
-backup_folder = 'images/'
-
-csv_col = {'cat': 1, 'img_urls': 2, 'main_img_url': 3}
-
-imgs_in_cat = 100
-cat_amount = 1000
-
-backup_filename = 'categories_to_download.csv'
+import traceback
+import getopt
+import sys
 
 
 def csv_str_to_list(csv_string):
@@ -101,7 +79,7 @@ def download_img(img_url, img_name, img_folder, backup_folder=''):
 
 
 def categories_to_download(imgs_in_cat, cat_amount,
-                           input_file_name, backup_filename=''):
+                           input_file_name, csv_col, backup_filename=''):
     """
     Return list of categories needed to be downloaded.
 
@@ -138,7 +116,7 @@ def categories_to_download(imgs_in_cat, cat_amount,
     num_of_imgs = dict()
     cats_ordered = []
 
-    with open(input_path, 'r') as input_file:
+    with open(input_file_name, 'r') as input_file:
         reader = csv.reader(input_file, quotechar='"',
                             quoting=csv.QUOTE_ALL,
                             skipinitialspace=True)
@@ -168,13 +146,14 @@ def categories_to_download(imgs_in_cat, cat_amount,
             break
 
     if len(cats_to_download) < cat_amount:
-        raise RuntimeError("Not sufficient amount of images for" +
+        raise RuntimeError("Not sufficient amount of images for " +
                            "the parameters you've chosen.")
 
-    with open(backup_filename, 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        for cat in cats_to_download:
-            writer.writerow([cat])
+    if backup_filename:
+        with open(backup_filename, 'w') as csvfile:
+            writer = csv.writer(csvfile)
+            for cat in cats_to_download:
+                writer.writerow([cat])
 
     return cats_to_download
 
@@ -182,9 +161,8 @@ def categories_to_download(imgs_in_cat, cat_amount,
 def download(cats_to_download, input_file_name, csv_col,
              imgs_in_cat, img_folder, backup_folder=''):
     """
-    Download images. For more detailed information regarding
-    this function parameters please refer to the docstring of this
-    script.
+    Download images. For detailed information regarding the parameters
+    of this function please refer to the docstring of this script.
 
             Parameters:
                     cats_to_download (list of str): Categories
@@ -211,6 +189,9 @@ def download(cats_to_download, input_file_name, csv_col,
 
     exceptions = 0
 
+    if not os.path.exists(img_folder):
+        os.mkdir(img_folder)
+
     with open(input_file_name, 'r') as input_file:
         reader = csv.reader(input_file, quotechar='"',
                             quoting=csv.QUOTE_ALL,
@@ -227,7 +208,9 @@ def download(cats_to_download, input_file_name, csv_col,
                 continue
 
             m_img_name = str(line_number) + '-M.jpg'
-            m_img_url = row[csv_col['main_img_url']]
+            m_img_url = csv_str_to_list(
+                            row[csv_col['main_img_url']]
+                        ).pop()
 
             img_urls = csv_str_to_list(row[csv_col['img_urls']])
             img_names = [str(line_number) + '-' + str(i+1) + '.jpg'
@@ -248,7 +231,7 @@ def download(cats_to_download, input_file_name, csv_col,
             except (HTTPError, URLError, ValueError) as err:
 
                 exceptions += 1
-                print("Exceptions", exceptions)
+                print("Html exception. Exceptions:", exceptions)
 
             except KeyboardInterrupt:
 
@@ -258,19 +241,91 @@ def download(cats_to_download, input_file_name, csv_col,
 
                 exceptions += 1
                 print("Some new exception!", line_number)
-                print("Exceptions", exceptions)
+                traceback.print_exc()
+                print("Exceptions:", exceptions)
 
 
-if __name__ == '__main__':
+def main(argv):
 
-    print("### reading input file")
+    input_file_name = ''
+
+    img_folder = ''
+
+    imgs_in_cat = -1
+    cat_amount = -1
+
+    csv_col = {'cat': 1, 'img_urls': 2, 'main_img_url': 3}
+
+    backup_folder = ''
+    backup_filename = ''
+
+    try:
+        opts, _ = getopt.getopt(argv, "hi:o:n:t:b:f",
+                                ["inp_file=",
+                                 "output_folder=",
+                                 "imgs_in_cat=",
+                                 "cat_amount=",
+                                 "backup_folder=",
+                                 "backup_filename="])
+
+    except getopt.GetoptError:
+        print ('download_images.py -h for help')
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+            print ('download_images.py -i <inp_file> ' +
+                   '-o <output_folder> -n <imgs_in_cat> ' +
+                   '-t <cat_amount> -b [backup_folder]' +
+                   ' -f [backup_filename]')
+            print('The CSV file with object info <inp_file>')
+            print('The folder to download images to <output_folder>')
+            print('The amount of images and categories you need to ' +
+                  'download imgs_in_cat, cat_amount')
+            print('Folder with already downloaded images [backup_folder]')
+            print('CSV file with list of categories to download' +
+                  '[backup_filename]')
+
+            sys.exit()
+        if opt in ["-i", "--inp_file"]:
+            input_file_name = arg
+        elif opt in ["-o", "--output_folder"]:
+            img_folder = arg
+        elif opt in ["-n", "--imgs_in_cat"]:
+            imgs_in_cat = int(arg)
+        elif opt in ["-t", "--cat_amount"]:
+            cat_amount = int(arg)
+        elif opt in ["-b", "--backup_folder"]:
+            backup_folder = arg
+        elif opt in ["-f", "--backup_filename"]:
+            backup_filename = arg
+
+    if not input_file_name or not img_folder or\
+       imgs_in_cat == -1 or cat_amount == -1:
+        print ('download_images.py -h for help')
+        sys.exit(2)
+
+    if img_folder[-1] != '/':
+        img_folder.append('/')
+
+    if backup_folder and backup_folder[-1] != '/':
+        backup_folder.append('/')
+
+    # Read input file and determine which categories to download
+    print("Reading input file...")
     cats_to_download = categories_to_download(
                             imgs_in_cat,
                             cat_amount,
                             input_file_name,
-                            backup_filename
+                            csv_col,
+                            backup_filename,
                        )
 
-    print("### downloading")
+    # Download the images
+    print("Downloading...")
     download(cats_to_download, input_file_name, csv_col,
              imgs_in_cat, img_folder)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

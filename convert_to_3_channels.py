@@ -9,6 +9,7 @@ from tqdm import tqdm
 import sys
 import getopt
 
+
 def convert_image(filename):
     """Converts an image to RGB."""
     with open(filename, 'rb') as f:

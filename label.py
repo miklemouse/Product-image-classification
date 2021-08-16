@@ -165,6 +165,7 @@ def label(input_filename, output_filename, image_folder_path,
                         print("incomplete data", line_number,
                               img_names)
 
+
 def main(argv):
 
     IMG_URLS_COL = 2
@@ -211,7 +212,6 @@ def main(argv):
 
     if image_folder_path[-1] != '/':
         image_folder_path += '/'
-
 
     # Write information about images in the CSV file
     print("Labeling images...")

@@ -306,7 +306,7 @@ def main(argv):
         sys.exit(2)
 
     if img_folder[-1] != '/':
-        img_folder.append('/')
+        img_folder += '/'
 
     if backup_folder and backup_folder[-1] != '/':
         backup_folder.append('/')

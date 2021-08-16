@@ -127,7 +127,7 @@ def main(argv):
         sys.exit(2)
 
     if img_folder[-1] != '/':
-        img_folder.append('/')
+        img_folder += '/'
 
     # generate dictionary of hash duplicates
     print("Searching for duplicates...")

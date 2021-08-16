@@ -13,3 +13,6 @@ Usage:
 5 argument is the amount of images in each category to sort out
 
 6 argument is the amount of categories to sort out
+
+To clean it up:
+rm -R small_dataset_*

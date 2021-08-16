@@ -114,7 +114,7 @@ def sort_by_cat(img_folder, output_folder, cat_by_img,
 
 
 def main(argv):
-# python3 sort_by_class.py -i test_images -o sorted_by_class -t cat -n 5 -m 5 -c cat_by_img.csv -a img_amount.csv 
+
     img_folder = ''
     output_folder = ''
 

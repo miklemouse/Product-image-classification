@@ -8,7 +8,7 @@ Usage:
 
 3 argument is the amount of images in each category to download initially
 
-4 argument is the amount of categories to download initally
+4 argument is the amount of categories to download initially
 
 5 argument is the amount of images in each category to sort out
 

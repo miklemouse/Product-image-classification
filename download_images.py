@@ -260,7 +260,7 @@ def main(argv):
     backup_filename = ''
 
     try:
-        opts, _ = getopt.getopt(argv, "hi:o:n:t:b:f",
+        opts, _ = getopt.getopt(argv, "hi:o:n:t:b:f:",
                                 ["inp_file=",
                                  "output_folder=",
                                  "imgs_in_cat=",
@@ -309,7 +309,7 @@ def main(argv):
         img_folder += '/'
 
     if backup_folder and backup_folder[-1] != '/':
-        backup_folder.append('/')
+        backup_folder += '/'
 
     # Read input file and determine which categories to download
     print("Reading input file...")

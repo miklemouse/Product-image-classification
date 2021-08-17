@@ -201,8 +201,11 @@ def download(cats_to_download, input_file_name, csv_col,
         for row in tqdm(reader):
             line_number += 1
 
-            cat = row[csv_col['cat']]
+            if line_number == 0 or len(row) < 4 or\
+               not row[csv_col['main_img_url']]:
+                continue
 
+            cat = row[csv_col['cat']]
             if cat not in cats_to_download or\
                imgs_downloaded[cat] >= imgs_in_cat:
                 continue
@@ -324,7 +327,7 @@ def main(argv):
     # Download the images
     print("Downloading...")
     download(cats_to_download, input_file_name, csv_col,
-             imgs_in_cat, img_folder)
+             imgs_in_cat, img_folder, backup_folder)
 
 
 if __name__ == '__main__':

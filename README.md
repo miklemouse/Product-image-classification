@@ -47,9 +47,9 @@ Run all the cells
 
 ## download_and_preprocess.zsh usage:
 
-./download_and_preprocess.zsh small_dataset.csv cat 6 6 5 5
+./download_and_preprocess.zsh small_dataset.csv small_ds cat 6 6 5 5
 
-Arguments: original dataset with the links, parameter to sort by: either "cat" or "type", amount of categories to download initially, amount of images in each category to download initially, amount of categories to sort out, amount of images in each category to sort out
+Arguments: original dataset with the links, prefix for all the files created, parameter to sort by: either "cat" or "type", amount of categories to download initially, amount of images in each category to download initially, amount of categories to sort out, amount of images in each category to sort out
 
 To clean it up: rm -R small_dataset_*
 

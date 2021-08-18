@@ -5,14 +5,14 @@
 777x20_main:
 https://drive.google.com/file/d/1JvA-I5GAhO-LnU9Uc_scg7HlVzFCogls/view?usp=sharing
 
-Or download using script:
+Or download using scripts:
 
 ./download_and_preprocess.zsh dump_with_category.csv 777x20 cat 1000 100 777 20
 
 100x50_main:
 https://drive.google.com/file/d/1vWcaJOQ8trVMiwuyIVMAE_QsKAUhYRBY/view?usp=sharing
 
-Or download using script:
+Or download using scripts:
 ./download_and_preprocess.zsh dump_with_category.csv 100x50 cat 110 70 100 50
 
 ## Checkpoints

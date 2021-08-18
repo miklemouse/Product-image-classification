@@ -1,22 +1,22 @@
 set -e
 
 FILE="$1"
-TYPE="$2"
-CATS="$3"
-IMGS="$4"
+PREF="$2"
+TYPE="$3"
+CATS="$4"
+IMGS="$5"
 
-CATS_="$5"
-IMGS_="$6"
+CATS_="$6"
+IMGS_="$7"
 
-PREFIX=${FILE%.*}
-IMG_FOLDER="${PREFIX}_img_folder"
-FULL_INFO="${PREFIX}_full_info.csv"
-CAT_BY_IMG="${PREFIX}_cat_by_img.csv"
-IMG_AMOUNT="${PREFIX}_img_amount.csv"
-SORTED="${PREFIX}_sorted_by_${TYPE}"
+IMG_FOLDER="${PREF}_img_folder"
+FULL_INFO="${PREF}_full_info.csv"
+CAT_BY_IMG="${PREF}_cat_by_img.csv"
+IMG_AMOUNT="${PREF}_img_amount.csv"
+SORTED="${PREF}_sorted_by_${TYPE}"
 ZIP_FOLDER="${SORTED}.zip"
 
-python3 download_images.py -i $FILE -o $IMG_FOLDER -n $IMGS -t $CATS
+python3 download_images.py -i $FILE -o $IMG_FOLDER -n $IMGS -m $CATS -t $TYPE
 
 python3 convert_to_3_channels.py -i $IMG_FOLDER
 

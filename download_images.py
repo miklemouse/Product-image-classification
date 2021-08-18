@@ -79,7 +79,8 @@ def download_img(img_url, img_name, img_folder, backup_folder=''):
 
 
 def categories_to_download(imgs_in_cat, cat_amount,
-                           input_file_name, csv_col, backup_filename=''):
+                           input_file_name, csv_col, download_type,
+                           backup_filename=''):
     """
     Return list of categories needed to be downloaded.
 
@@ -134,7 +135,11 @@ def categories_to_download(imgs_in_cat, cat_amount,
                 num_of_imgs[cat] = 0
                 cats_ordered.append(cat)
 
-            imgs_amount = len(csv_str_to_list(row[csv_col['img_urls']])) + 1
+            imgs_amount = 1
+            if download_type == 'type':
+                imgs_amount += len(
+                                csv_str_to_list(row[csv_col['img_urls']])
+                               )
             num_of_imgs[cat] += imgs_amount
 
     # determine which categories to download
@@ -159,7 +164,7 @@ def categories_to_download(imgs_in_cat, cat_amount,
 
 
 def download(cats_to_download, input_file_name, csv_col,
-             imgs_in_cat, img_folder, backup_folder=''):
+             imgs_in_cat, img_folder, download_type, backup_folder=''):
     """
     Download images. For detailed information regarding the parameters
     of this function please refer to the docstring of this script.
@@ -226,10 +231,11 @@ def download(cats_to_download, input_file_name, csv_col,
 
                 imgs_downloaded[cat] += 1
 
-                for i in range(len(img_urls)):
-                    download_img(img_urls[i], img_names[i],
-                                 img_folder, backup_folder)
-                    imgs_downloaded[cat] += 1
+                if download_type == 'type':
+                    for i in range(len(img_urls)):
+                        download_img(img_urls[i], img_names[i],
+                                     img_folder, backup_folder)
+                        imgs_downloaded[cat] += 1
 
             except (HTTPError, URLError, ValueError) as err:
 
@@ -257,17 +263,20 @@ def main(argv):
     imgs_in_cat = -1
     cat_amount = -1
 
+    download_type = ''
+
     csv_col = {'cat': 1, 'img_urls': 2, 'main_img_url': 3}
 
     backup_folder = ''
     backup_filename = ''
 
     try:
-        opts, _ = getopt.getopt(argv, "hi:o:n:t:b:f:",
+        opts, _ = getopt.getopt(argv, "hi:o:n:m:t:b:f:",
                                 ["inp_file=",
                                  "output_folder=",
                                  "imgs_in_cat=",
                                  "cat_amount=",
+                                 "type=",
                                  "backup_folder=",
                                  "backup_filename="])
 
@@ -279,12 +288,13 @@ def main(argv):
         if opt == '-h':
             print ('download_images.py -i <inp_file> ' +
                    '-o <output_folder> -n <imgs_in_cat> ' +
-                   '-t <cat_amount> -b [backup_folder]' +
+                   '-m <cat_amount> -t <type> -b [backup_folder]' +
                    ' -f [backup_filename]')
             print('The CSV file with object info <inp_file>')
             print('The folder to download images to <output_folder>')
             print('The amount of images and categories you need to ' +
                   'download imgs_in_cat, cat_amount')
+            print('<type>: either "cat" or "type"')
             print('Folder with already downloaded images [backup_folder]')
             print('CSV file with list of categories to download' +
                   '[backup_filename]')
@@ -296,15 +306,17 @@ def main(argv):
             img_folder = arg
         elif opt in ["-n", "--imgs_in_cat"]:
             imgs_in_cat = int(arg)
-        elif opt in ["-t", "--cat_amount"]:
+        elif opt in ["-m", "--cat_amount"]:
             cat_amount = int(arg)
+        elif opt in ["-t", "--type"]:
+            download_type = opt
         elif opt in ["-b", "--backup_folder"]:
             backup_folder = arg
         elif opt in ["-f", "--backup_filename"]:
             backup_filename = arg
 
     if not input_file_name or not img_folder or\
-       imgs_in_cat == -1 or cat_amount == -1:
+       not download_type or imgs_in_cat == -1 or cat_amount == -1:
         print ('download_images.py -h for help')
         sys.exit(2)
 
@@ -321,13 +333,14 @@ def main(argv):
                             cat_amount,
                             input_file_name,
                             csv_col,
-                            backup_filename,
+                            download_type,
+                            backup_filename
                        )
 
     # Download the images
     print("Downloading...")
     download(cats_to_download, input_file_name, csv_col,
-             imgs_in_cat, img_folder, backup_folder)
+             imgs_in_cat, img_folder, download_type, backup_folder)
 
 
 if __name__ == '__main__':

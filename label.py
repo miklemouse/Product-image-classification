@@ -175,9 +175,6 @@ def label(input_filename, output_filename, image_folder_path,
                         for img_name in real_img_names:
                             cat_by_img[img_name] = cat
                             img_amount_by_cat[cat][1] += 1
-                    else:
-                        print("incomplete data", line_number,
-                              img_names)
 
     with open(cat_by_img_csv, 'w') as cat_by_img_file:
         writer = csv.writer(cat_by_img_file)

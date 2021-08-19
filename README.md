@@ -51,7 +51,8 @@ And the name of the zip-folder in the second cell of the script:
 
 Run all the cells
 
-## download_and_preprocess.zsh usage:
+## Scripts
+To run all the scripts:
 
 ./download_and_preprocess.zsh small_dataset.csv small_ds cat 6 6 5 5
 

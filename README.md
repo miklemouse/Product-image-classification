@@ -21,7 +21,7 @@ https://drive.google.com/file/d/1vWcaJOQ8trVMiwuyIVMAE_QsKAUhYRBY/view?usp=shari
 Or download using scripts:
 ./download_and_preprocess.zsh dump_with_category.csv 100x50 cat 110 70 100 50
 
-Note: in order to download with the scripts you need to have dump_with_category.csv. It can be downloaded here:
+Note: in order to download with these scripts you need to have dump_with_category.csv. It can be downloaded here:
 
 https://drive.google.com/file/d/1rV1eqUl0vqC6Y6JYrNR1Lvh_5zzGybpq/view?usp=sharing
 

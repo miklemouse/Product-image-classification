@@ -58,5 +58,5 @@ To run all the scripts:
 
 Arguments: original dataset with the links, prefix for all the files created, parameter to sort by: either "cat" or "type", amount of categories to download initially, amount of images in each category to download initially, amount of categories to sort out, amount of images in each category to sort out
 
-To clean it up: rm -R small_dataset_*
+To clean it up: rm -R small_ds_*
 

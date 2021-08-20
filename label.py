@@ -111,7 +111,8 @@ def check_images(csv_urls, item_number, image_folder_path):
 
 def label(input_filename, output_filename, image_folder_path,
           cat_by_img_csv, img_amount_by_cat_csv,
-          CAT_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL, progress_check):
+          CAT_COL, CAT_NAME_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL,
+          progress_check):
     """Write information about images to a CSV file.
 
             Parameters:
@@ -167,7 +168,7 @@ def label(input_filename, output_filename, image_folder_path,
                                                             )
                     cat_by_img[m_img_real_name] = cat
                     if not cat in img_amount_by_cat:
-                        img_amount_by_cat[cat] = [0, 0]
+                        img_amount_by_cat[cat] = [0, 0, row[CAT_NAME_COL]]
                     img_amount_by_cat[cat][0] += 1
                     if imgs_exist:
                         newline_row.append(img_names)
@@ -189,6 +190,7 @@ def label(input_filename, output_filename, image_folder_path,
 def main(argv):
 
     CAT_COL = 1
+    CAT_NAME_COL = 4
     IMG_URLS_COL = 2
     MAIN_IMAGE_URL_COL = 3
 
@@ -252,7 +254,8 @@ def main(argv):
     print("Labeling images...")
     label(input_filename, output_filename, image_folder_path,
           cat_by_img_csv, img_amount_by_cat_csv,
-          CAT_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL, progress_check)
+          CAT_COL, CAT_NAME_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL,
+          progress_check)
 
 
 if __name__ == '__main__':

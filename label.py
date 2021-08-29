@@ -32,10 +32,7 @@ def csv_str_to_list(csv_string):
     if len(csv_string) < 2:
         return []
     elif csv_string[0] == '[' and csv_string[-1] == ']':
-        split = csv_string[1:-1].split(', ')
-        return [word[1:-1] for word in split]
-    else:
-        return ['']
+        return eval(csv_string)
 
 
 def list_to_csv_str(arr):
@@ -102,17 +99,16 @@ def check_images(csv_urls, item_number, image_folder_path):
     for img_number in range(len(img_urls)):
         img_name = str(item_number) + '-' + str(img_number + 1) \
                    + '.jpg'
-        if not path.exists(image_folder_path + img_name):
-            return (False, '', [])
-        img_names.append(img_name)
+        if path.exists(image_folder_path + img_name):
+            img_names.append(img_name)
 
-    return (True, list_to_csv_str(img_names), img_names)
+    return (list_to_csv_str(img_names), img_names)
 
 
 def label(input_filename, output_filename, image_folder_path,
-          cat_by_img_csv, img_amount_by_cat_csv,
+          cat_by_img_csv, img_amount_by_cat_csv, color_by_img_csv,
           CAT_COL, CAT_NAME_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL,
-          progress_check):
+          COLOR_COL = None, progress_check = 0):
     """Write information about images to a CSV file.
 
             Parameters:
@@ -126,6 +122,7 @@ def label(input_filename, output_filename, image_folder_path,
                     containing the images
     """
     cat_by_img = dict()
+    color_by_img = dict()
     img_amount_by_cat = dict()
 
     with open(input_filename, 'r') as input_file,\
@@ -149,10 +146,15 @@ def label(input_filename, output_filename, image_folder_path,
                 writer.writerow(newline_row)
 
             else:
-                cat = int(row[CAT_COL])
-
                 if len(row) < 4 or row[MAIN_IMAGE_URL_COL] == '':
                     continue
+
+                cat = int(row[CAT_COL])
+
+                obj_color = None
+                if COLOR_COL:
+                    obj_color = csv_str_to_list(row[COLOR_COL])
+
 
                 m_img_exists, m_img_name, m_img_real_name = check_main_image(
                                                                 line_number,
@@ -161,26 +163,36 @@ def label(input_filename, output_filename, image_folder_path,
                 if m_img_exists:
                     newline_row.append(m_img_name)
                     csv_urls = row[IMG_URLS_COL]
-                    imgs_exist, img_names, real_img_names = check_images(
-                                                             csv_urls,
-                                                             line_number,
-                                                             image_folder_path
-                                                            )
+                    img_names, real_img_names = check_images(
+                                                    csv_urls,
+                                                    line_number,
+                                                    image_folder_path
+                                                )
                     cat_by_img[m_img_real_name] = cat
+                    if obj_color:
+                        color_by_img[m_img_real_name] = obj_color
                     if not cat in img_amount_by_cat:
                         img_amount_by_cat[cat] = [0, 0, row[CAT_NAME_COL]]
                     img_amount_by_cat[cat][0] += 1
-                    if imgs_exist:
-                        newline_row.append(img_names)
-                        writer.writerow(newline_row)
-                        for img_name in real_img_names:
-                            cat_by_img[img_name] = cat
-                            img_amount_by_cat[cat][1] += 1
+
+                    newline_row.append(img_names)
+                    writer.writerow(newline_row)
+                    for img_name in real_img_names:
+                        cat_by_img[img_name] = cat
+                        if obj_color:
+                            color_by_img[img_name] = obj_color
+                        img_amount_by_cat[cat][1] += 1
 
     with open(cat_by_img_csv, 'w') as cat_by_img_file:
         writer = csv.writer(cat_by_img_file)
         for img, cat in cat_by_img.items():
             writer.writerow([img, cat])
+
+    if COLOR_COL:
+        with open(color_by_img_csv, 'w') as color_by_img_file:
+            writer = csv.writer(color_by_img_file)
+            for img, color in color_by_img.items():
+                writer.writerow([img] + color)
 
     with open(img_amount_by_cat_csv, 'w') as img_amount_by_cat_file:
         writer = csv.writer(img_amount_by_cat_file)
@@ -190,7 +202,12 @@ def label(input_filename, output_filename, image_folder_path,
 def main(argv):
 
     CAT_COL = 1
-    CAT_NAME_COL = 4
+    # If the dataset is without color it will be changed to 4 after parsing
+    # the command-line arguments
+    CAT_NAME_COL = 5
+    # If the dataset is without color it will be changed to None after
+    # parsing the command-line arguments
+    COLOR_COL = 4
     IMG_URLS_COL = 2
     MAIN_IMAGE_URL_COL = 3
 
@@ -199,15 +216,19 @@ def main(argv):
     output_filename = ""
     img_amount_by_cat_csv = ""
     cat_by_img_csv = ""
+    color_by_img_csv = ""
     progress_check = 0
+    dataset_type = 'no-color'
 
     try:
-        opts, _ = getopt.getopt(argv, "hf:i:o:c:a:p:",
+        opts, _ = getopt.getopt(argv, "hf:i:o:c:a:t:l:p:",
                                 ["input_file=",
                                  "img_folder=",
                                  "output_file=",
                                  "cat_by_img_csv=",
                                  "img_amount_by_cat_csv=",
+                                 "ds_type=",
+                                 "color_by_img_csv=",
                                  "progress_check="])
 
     except getopt.GetoptError:
@@ -218,14 +239,19 @@ def main(argv):
         if opt == '-h':
             print ('label.py -f <input_file> -i <img_folder> ' +
                    '-o <output_file> -c <cat_by_img_csv> ' +
-                   '-a <img_amount_by_cat_csv> -p [progress_check]')
+                   '-a <img_amount_by_cat_csv> -t [ds_type] ' + 
+                   '-l [color_by_img_csv] -p [progress_check]')
             print('The CSV file with object info <input_file>')
             print('The folder with the downloaded images <img_folder>')
-            print('The file to write the general info <output_file>')
-            print('The file to write category of each image ' +
+            print('The file to write the general info to' +
+                   '<output_file>')
+            print('The file to write category of each image to ' +
                   '<cat_by_img_csv>')
-            print('The file to write image amount in each category ' +
+            print('The file to write image amount in each category to ' +
                   '<img_amount_by_cat_csv>')
+            print('[ds_type]: either "color" or "no-color" (default)')
+            print('The file to write color of each image to ' +
+                  '[color_by_img_csv]')
             print('Print progress every [progress_check] lines')
             sys.exit()
         if opt in ["-f", "--input_file"]:
@@ -238,6 +264,10 @@ def main(argv):
             cat_by_img_csv = arg
         elif opt in ["-a", "--img_amount_by_cat_csv"]:
             img_amount_by_cat_csv = arg
+        elif opt in ["-t", "--ds_type"]:
+            dataset_type = arg
+        elif opt in ["-l", "--color_by_img_csv"]:
+            color_by_img_csv = arg
         elif opt in ["-p", "--progress_check"]:
             progress_check = int(arg)
 
@@ -247,15 +277,19 @@ def main(argv):
         print ('label.py -h for help')
         sys.exit(2)
 
+    if dataset_type == 'no-color':
+        COLOR_COL = None
+        CAT_NAME_COL  = 4
+
     if image_folder_path[-1] != '/':
         image_folder_path += '/'
 
     # Write information about images in the CSV file
     print("Labeling images...")
     label(input_filename, output_filename, image_folder_path,
-          cat_by_img_csv, img_amount_by_cat_csv,
+          cat_by_img_csv, img_amount_by_cat_csv, color_by_img_csv,
           CAT_COL, CAT_NAME_COL, IMG_URLS_COL, MAIN_IMAGE_URL_COL,
-          progress_check)
+          COLOR_COL, progress_check)
 
 
 if __name__ == '__main__':

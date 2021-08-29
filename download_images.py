@@ -136,7 +136,7 @@ def categories_to_download(imgs_in_cat, cat_amount,
                 cats_ordered.append(cat)
 
             imgs_amount = 1
-            if download_type == 'type':
+            if download_type == 'all':
                 imgs_amount += len(
                                 csv_str_to_list(row[csv_col['img_urls']])
                                )
@@ -294,7 +294,7 @@ def main(argv):
             print('The folder to download images to <output_folder>')
             print('The amount of images and categories you need to ' +
                   'download imgs_in_cat, cat_amount')
-            print('<type>: either "cat" or "type"')
+            print('<type>: either "main" or "all"')
             print('Folder with already downloaded images [backup_folder]')
             print('CSV file with list of categories to download' +
                   '[backup_filename]')

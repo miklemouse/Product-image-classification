@@ -5,8 +5,8 @@
 0. Classification by category, accuracy 55% (1000 categories, 100 images in each, duplicates have not been removed in this experiment). Feature embedding created with pretrained resnet34 from torchvision, and then passed to K-Neighbours Classifier (from scipy).
 1. Classification by category, accuracy 65% (100 categories, 50 images in each). Model -- resnet34 trained with pytorch-lightning, loss -- the negative log likelihood loss.
 2. Binary classification Main image / Other image, accuracy 60% (777 categories, 40 images in each). Model -- resnet34 trained with pytorch-lightning, loss -- the negative log likelihood loss.
-3. Color classification, determine all the colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Two approaches: choose checkpoint with (1) the greatest recall or (2) the least loss. 1 one: recall 68%, precision 86%. 2 one: recall 32%, precision 70%. (Only main images) 
-4. Color classification, determine 10 simple colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Choosing checkpoint with the greatest recall: recall 79%, precision 89%. (Only main images)
+3. Color classification, determine all the colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Two approaches: choose checkpoint with (1) the greatest recall or (2) the least loss. 1st one: recall 68%, precision 86%. 2nd one: recall 32%, precision 70%. (Only main images) 
+3. Color classification, determine all the colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Two approaches: choose checkpoint with (1) the greatest recall or (2) the least loss. 1st one: recall 68%, precision 76%. 2nd one: recall 56%, precision 81%. (Only main images) (Colors: ['red', 'yellow', 'blue', 'orange', 'green', 'purple', 'beige', 'pink', 'white', 'black'] aka ['красный', 'желтый', 'голубой', 'оранжевый', 'зеленый', 'фиолетовый', 'бежевый', 'розовый', 'белый', 'черный'])
 As I trained the model in 3. and 4., precision was decreasing whereas recall was inscreasing.
 ## Datasets
 

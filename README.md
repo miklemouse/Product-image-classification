@@ -4,8 +4,9 @@
 
 0. Classification by category, accuracy 55% (1000 categories, 100 images in each, duplicates have not been removed in this experiment). Feature embedding created with pretrained resnet34 from torchvision, and then passed to K-Neighbours Classifier (from scipy).
 1. Classification by category, accuracy 65% (100 categories, 50 images in each). Model -- resnet34 trained with pytorch-lightning, loss -- the negative log likelihood loss.
-2. Binary classification Main image / Other image, accuracy 60% (777 categories, 40 images in each). Model -- resnet34 trained with pytorch-lightning loss -- the negative log likelihood loss.
-
+2. Binary classification Main image / Other image, accuracy 60% (777 categories, 40 images in each). Model -- resnet34 trained with pytorch-lightning, loss -- the negative log likelihood loss.
+3. Color classification, determine all the colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Two approaches: choose checkpoint with (1) the greatest recall or (2) the least loss. 1 one: recall 68%, precision 86%. 2 one: recall 32%, precision 70%.
+4. Color classification, determine 10 simple colors. Model -- resnet34 trained with python-lightning, loss -- binary cross entropy. Two approaches: choose checkpoint with (1) the greatest recall or (2) the least loss. 1 one: recall --%, precision --%. 2 one: 1 one: recall --%, precision --%.
 ## Datasets
 
 777x20_main:

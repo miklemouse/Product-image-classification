@@ -1,5 +1,7 @@
 # Product image classification
 
+![alt text](https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg)
+
 ## Results
 
 0. Classification by category, accuracy 55% (1000 categories, 100 images in each, duplicates have not been removed in this experiment). Feature embedding created with pretrained resnet34 from torchvision, and then passed to K-Neighbours Classifier (from scipy).

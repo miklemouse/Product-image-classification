@@ -1,6 +1,6 @@
 # Product image classification
 
-<img src="https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg" size=0.6 />
+<img src="https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg" height=600 />
 
 
 ![alt text](https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg)

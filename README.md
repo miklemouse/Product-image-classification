@@ -1,9 +1,8 @@
 # Product image classification
 
+Color classification sample results:
 <img src="https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg" height=600 />
 
-
-![alt text](https://github.com/miklemouse/Product-image-classification/blob/main/Color-classification-results.jpg)
 
 ## Results
 
